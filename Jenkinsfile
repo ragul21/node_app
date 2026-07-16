@@ -30,6 +30,14 @@ pipeline {
                 '''
             }
         }
+
+        stage('Upload to JFrog') {
+            steps {
+                sh '''
+                jf rt upload artifacts/calculator.zip calculator-local/
+                '''
+            }
+        }
     }
 
     post {
