@@ -3,32 +3,25 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
+        stage('Install') {
             steps {
-                echo 'Code checked out by Jenkins'
+                sh '''
+                    pwd
+                    node -v
+                    npm -v
+                    npm install --verbose
+                    echo "INSTALL FINISHED"
+                '''
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Test') {
             steps {
-                sh 'npm install'
+                sh '''
+                    npm test
+                    echo "TEST FINISHED"
+                '''
             }
-        }
-
-        stage('Run Tests') {
-            steps {
-                sh 'npm test'
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'Pipeline Passed ✅'
-        }
-
-        failure {
-            echo 'Pipeline Failed ❌'
         }
     }
 }
