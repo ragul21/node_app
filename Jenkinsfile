@@ -24,13 +24,17 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                sh '''
+                    npm install
+                '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'npm test'
+                sh '''
+                    npm test
+                '''
             }
         }
 
@@ -49,26 +53,26 @@ pipeline {
 
         stage('Debug JFrog') {
             steps {
-        sh '''
-            echo "===== USER ====="
-            whoami
+                sh '''
+                    echo "===== USER ====="
+                    whoami
 
-            echo "===== HOME ====="
-            echo $HOME
+                    echo "===== HOME ====="
+                    echo $HOME
 
-            echo "===== JF CONFIG ====="
-            jf config show || true
+                    echo "===== JF CONFIG ====="
+                    jf config show || true
 
-            echo "===== JF VERSION ====="
-            jf --version
-        '''
-    }
-}
+                    echo "===== JF VERSION ====="
+                    jf --version
+                '''
+            }
+        }
 
         stage('Upload Artifact') {
             steps {
                 sh '''
-                    jf rt upload artifacts/${ARTIFACT_NAME} calculator-local/
+                    jf rt upload --server-id=ind12server artifacts/${ARTIFACT_NAME} calculator-local/
                 '''
             }
         }
@@ -77,7 +81,7 @@ pipeline {
     post {
 
         success {
-            echo "Pipeline Successful ✅  "
+            echo "Pipeline Successful ✅"
         }
 
         failure {
