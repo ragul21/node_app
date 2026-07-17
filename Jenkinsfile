@@ -1,21 +1,34 @@
 pipeline {
     agent any
 
+    environment {
+        ARTIFACT_NAME = "calculator.zip"
+    }
+
     stages {
 
         stage('Checkout') {
             steps {
-                echo 'Checking out source code...'
+                checkout scm
             }
         }
 
-        stage('Build') {
+        stage('Verify Environment') {
+            steps {
+                sh '''
+                    node -v
+                    npm -v
+                '''
+            }
+        }
+
+        stage('Install Dependencies') {
             steps {
                 sh 'npm install'
             }
         }
 
-        stage('Test') {
+        stage('Run Tests') {
             steps {
                 sh 'npm test'
             }
@@ -24,29 +37,33 @@ pipeline {
         stage('Package') {
             steps {
                 sh '''
-                mkdir -p artifacts
-                zip -r artifacts/calculator.zip . \
-                  -x "node_modules/*" ".git/*"
+                    mkdir -p artifacts
+
+                    zip -r artifacts/${ARTIFACT_NAME} . \
+                    -x "node_modules/*" \
+                       ".git/*" \
+                       "artifacts/*"
                 '''
             }
         }
 
-        stage('Upload to JFrog') {
+        stage('Upload Artifact') {
             steps {
                 sh '''
-                jf rt upload artifacts/calculator.zip calculator-local/
+                    jf rt upload artifacts/${ARTIFACT_NAME} calculator-local/
                 '''
             }
         }
     }
 
     post {
+
         success {
-            echo 'Pipeline Passed ✅ '
+            echo "Pipeline Successful ✅"
         }
 
         failure {
-            echo 'Pipeline Failed ❌'
+            echo "Pipeline Failed ❌"
         }
 
         always {
