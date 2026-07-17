@@ -47,6 +47,24 @@ pipeline {
             }
         }
 
+        stage('Debug JFrog') {
+            steps {
+        sh '''
+            echo "===== USER ====="
+            whoami
+
+            echo "===== HOME ====="
+            echo $HOME
+
+            echo "===== JF CONFIG ====="
+            jf config show || true
+
+            echo "===== JF VERSION ====="
+            jf --version
+        '''
+    }
+}
+
         stage('Upload Artifact') {
             steps {
                 sh '''
